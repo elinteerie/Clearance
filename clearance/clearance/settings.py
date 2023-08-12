@@ -52,7 +52,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'clearance.urls'
 
-AUTH_USER_MODEL = 'account.StudentUser'
+AUTH_USER_MODEL = 'account.ConcreteUser'
 
 TEMPLATES = [
     {

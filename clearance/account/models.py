@@ -18,8 +18,11 @@ class Faculty(models.Model):
     def __str__(self) -> str:
         return self.name
     
+class DefaultUser(AbstractUser):
+    pass
+    
 
-class StudentUser(AbstractUser):
+class StudentUser(models.Model):
     
     RELIGION_CHOICES = [
     ('Christian', 'Christian'),
@@ -46,6 +49,7 @@ class StudentUser(AbstractUser):
     
     def profile_picture_upload_path(self, instance, filename):
         return f'media/{instance.department.name}/{instance.faculty.name}/{instance.username}/{filename}'
+    student = models.ForeignKey(DefaultUser, on_delete=models.CASCADE, related_name='student_user')
     
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='student_department', null=True, blank=True)
     faculty =  models.ForeignKey(Faculty, on_delete=models.CASCADE, related_name='student_faculty', null=True, blank=True)
@@ -81,7 +85,6 @@ class StudentUser(AbstractUser):
 class ScreenUser(AbstractUser):
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='screen_department', null=True, blank=True)
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE, related_name='screen_department', null=True, blank=True)
-    is_superuser = models.BooleanField(default=False)
     groups = models.ManyToManyField(Group, related_name='screen_users')
     user_permissions = models.ManyToManyField(Permission, related_name='scrren_users')
     
@@ -91,7 +94,6 @@ class ScreenUser(AbstractUser):
     
 
 class UAOUser(AbstractUser):
-    is_superuser = models.BooleanField(default=False)
     signature = models.FileField(upload_to='media/uao/signature/')
     stamp = models.FileField(upload_to='media/uao/stamp/')
     groups = models.ManyToManyField(Group, related_name='uao_users')
@@ -102,7 +104,6 @@ class UAOUser(AbstractUser):
     
 class DAOUser(AbstractUser):
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='dao_department', null=True, blank=True)
-    is_superuser = models.BooleanField(default=False)
     groups = models.ManyToManyField(Group, related_name='dao_users')
     user_permissions = models.ManyToManyField(Permission, related_name='dao_users')
     
@@ -110,7 +111,6 @@ class DAOUser(AbstractUser):
         verbose_name_plural = "DAOUsers"
     
 class SenateUser(AbstractUser):
-    is_superuser = models.BooleanField(default=False)
     groups = models.ManyToManyField(Group, related_name='senate_users')
     user_permissions = models.ManyToManyField(Permission, related_name='senate_users')
     
@@ -121,7 +121,6 @@ class SenateUser(AbstractUser):
     
 class SAOUser(AbstractUser):
     faculty =  models.ForeignKey(Faculty, on_delete=models.CASCADE, related_name='sao_faculty', null=True, blank=True)
-    is_superuser = models.BooleanField(default=False)
     groups = models.ManyToManyField(Group, related_name='sao_users')
     user_permissions = models.ManyToManyField(Permission, related_name='sao_users')
     
@@ -131,5 +130,12 @@ class SAOUser(AbstractUser):
     
 
 class Current_Admission_Session(models.Model):
+    
     session = models.CharField(max_length=20)
     
+
+class ConcreteUser(ScreenUser, AbstractUser):
+    pass
+
+class ConcreteUser(StudentUser, AbstractUser):
+    pass
