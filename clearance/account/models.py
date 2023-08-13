@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import Group, Permission
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 
@@ -78,64 +79,69 @@ class StudentUser(models.Model):
         verbose_name_plural = "StudentUsers"
     
     def __str__(self) -> str:
-        return self.username
+        return self.student.username
 
      
     
-class ScreenUser(AbstractUser):
+class ScreenUser(models.Model):
+    screener = models.ForeignKey(DefaultUser, on_delete=models.CASCADE, related_name='screener_user')
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='screen_department', null=True, blank=True)
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE, related_name='screen_department', null=True, blank=True)
-    groups = models.ManyToManyField(Group, related_name='screen_users')
-    user_permissions = models.ManyToManyField(Permission, related_name='scrren_users')
+    students = models.ManyToManyField(StudentUser)
+    
     
     class Meta:
         verbose_name_plural = "ScreenUsers"
         
+    def __str__(self) -> str:
+        return self.screener.username
+        
     
 
-class UAOUser(AbstractUser):
+class UAOUser(models.Model):
+    uao = models.ForeignKey(DefaultUser, on_delete=models.CASCADE, related_name='uao_user')
     signature = models.FileField(upload_to='media/uao/signature/')
     stamp = models.FileField(upload_to='media/uao/stamp/')
-    groups = models.ManyToManyField(Group, related_name='uao_users')
-    user_permissions = models.ManyToManyField(Permission, related_name='uao_users')
     
     class Meta:
         verbose_name_plural = "UAOUsers"
     
-class DAOUser(AbstractUser):
+class DAOUser(models.Model):
+    dao = models.ForeignKey(DefaultUser, on_delete=models.CASCADE, related_name='dao_user')
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='dao_department', null=True, blank=True)
-    groups = models.ManyToManyField(Group, related_name='dao_users')
-    user_permissions = models.ManyToManyField(Permission, related_name='dao_users')
+    
     
     class Meta:
         verbose_name_plural = "DAOUsers"
     
-class SenateUser(AbstractUser):
-    groups = models.ManyToManyField(Group, related_name='senate_users')
-    user_permissions = models.ManyToManyField(Permission, related_name='senate_users')
+class SenateUser(models.Model):
+    senate = models.ForeignKey(DefaultUser, on_delete=models.CASCADE, related_name='senate_user')
     
     class Meta:
         verbose_name_plural = "SenateUsers"
     
     
     
-class SAOUser(AbstractUser):
+class SAOUser(models.Model):
+    sao = models.ForeignKey(DefaultUser, on_delete=models.CASCADE, related_name='sao_user')
     faculty =  models.ForeignKey(Faculty, on_delete=models.CASCADE, related_name='sao_faculty', null=True, blank=True)
-    groups = models.ManyToManyField(Group, related_name='sao_users')
-    user_permissions = models.ManyToManyField(Permission, related_name='sao_users')
+    
     
     
     class Meta:
         verbose_name_plural = "SAOUsers"
     
-
 class Current_Admission_Session(models.Model):
-    
-    session = models.CharField(max_length=20)
-    
-
-class ConcreteUser(ScreenUser, AbstractUser):
-    pass
-
-class ConcreteUser(StudentUser, AbstractUser):
-    pass
+        session = models.CharField(max_length=10)
+        
+        def __str__(self) -> str:
+            return self.session
+        
+        
+@receiver(post_save, sender=StudentUser)
+def add_student_to_screener(sender, instance, created, **kwargs):
+    if created and instance.department:
+        screen_user = ScreenUser.objects.filter(department=instance.department).first()
+        print(screen_user)
+        if screen_user:
+            screen_user.students.add(instance)
