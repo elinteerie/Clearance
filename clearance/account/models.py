@@ -87,7 +87,7 @@ class ScreenUser(models.Model):
     screener = models.ForeignKey(DefaultUser, on_delete=models.CASCADE, related_name='screener_user')
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='screen_department', null=True, blank=True)
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE, related_name='screen_department', null=True, blank=True)
-    students = models.ManyToManyField(StudentUser)
+    students = models.ManyToManyField(StudentUser, related_name='screeners')
     
     
     class Meta:
@@ -102,6 +102,7 @@ class UAOUser(models.Model):
     uao = models.ForeignKey(DefaultUser, on_delete=models.CASCADE, related_name='uao_user')
     signature = models.FileField(upload_to='media/uao/signature/')
     stamp = models.FileField(upload_to='media/uao/stamp/')
+    students = models.ManyToManyField(StudentUser, related_name='all_students')
     
     class Meta:
         verbose_name_plural = "UAOUsers"
@@ -109,13 +110,14 @@ class UAOUser(models.Model):
 class DAOUser(models.Model):
     dao = models.ForeignKey(DefaultUser, on_delete=models.CASCADE, related_name='dao_user')
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='dao_department', null=True, blank=True)
-    
+    students = models.ManyToManyField(StudentUser, related_name='sdept_students')
     
     class Meta:
         verbose_name_plural = "DAOUsers"
     
 class SenateUser(models.Model):
     senate = models.ForeignKey(DefaultUser, on_delete=models.CASCADE, related_name='senate_user')
+    students = models.ManyToManyField(StudentUser, related_name='gen_students')
     
     class Meta:
         verbose_name_plural = "SenateUsers"
@@ -125,7 +127,7 @@ class SenateUser(models.Model):
 class SAOUser(models.Model):
     sao = models.ForeignKey(DefaultUser, on_delete=models.CASCADE, related_name='sao_user')
     faculty =  models.ForeignKey(Faculty, on_delete=models.CASCADE, related_name='sao_faculty', null=True, blank=True)
-    
+    students = models.ManyToManyField(StudentUser, related_name='faculty_students')
     
     
     class Meta:
@@ -142,6 +144,17 @@ class Current_Admission_Session(models.Model):
 def add_student_to_screener(sender, instance, created, **kwargs):
     if created and instance.department:
         screen_user = ScreenUser.objects.filter(department=instance.department).first()
+        doa_user = DAOUser.objects.filter(department=instance.department).first()
         print(screen_user)
         if screen_user:
             screen_user.students.add(instance)
+        if doa_user:
+            doa_user.students.add(instance)
+            
+            
+@receiver(post_save, sender=StudentUser)
+def add_student_to_faculty(sender, instance, created, **kwargs):
+    if created and instance.faculty:
+        sao_user = SAOUser.objects.filter(faculty=instance.faculty).first()
+        if sao_user:
+            sao_user.students.add(instance)
