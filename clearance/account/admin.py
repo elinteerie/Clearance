@@ -20,9 +20,10 @@ class CustomUserAdmin(UserAdmin):
     list_display = [
                     "username",
                     "email",
+                    'user_type',
                     "is_staff"]
-    fieldsets = UserAdmin.fieldsets+((None, {"fields": ()}),)
-    add_fieldsets = UserAdmin.add_fieldsets + ((None, {"fields": ()}),)
+    fieldsets = UserAdmin.fieldsets+((None, {"fields": ('user_type',)}),)
+    add_fieldsets = UserAdmin.add_fieldsets + ((None, {"fields": ('user_type',)}),)
 
 
 class StudentInline(admin.TabularInline):

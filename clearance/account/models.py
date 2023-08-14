@@ -5,6 +5,7 @@ from django.dispatch import receiver
 
 
 
+
 class Department(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True)
     
@@ -20,7 +21,16 @@ class Faculty(models.Model):
         return self.name
     
 class DefaultUser(AbstractUser):
-    pass
+    USER_TYPES = [
+        ('DAO', 'DAO'),
+        ('SAO', 'SAO'),
+        ('SENATE', 'SENATE'),
+        ('SCREEN', 'SCREEN'),
+        ('STUDENT', 'STUDENT'),
+        ('UAO', 'UAO'),
+    ]
+    
+    user_type = models.CharField(max_length=10, choices=USER_TYPES)
     
 
 class StudentUser(models.Model):
@@ -29,6 +39,12 @@ class StudentUser(models.Model):
     ('Christian', 'Christian'),
     ('Islam', 'Islam'),
     ('Traditional', 'Traditional'),
+    ('Others', 'Others'),
+    ]
+    
+    SEX_CHOICES = [
+    ('Male', 'Male'),
+    ('Female', 'Female'),
     ('Others', 'Others'),
     ]
 
@@ -48,13 +64,15 @@ class StudentUser(models.Model):
     ('Other', 'Other'),
     ]
     
-    def profile_picture_upload_path(self, instance, filename):
-        return f'media/{instance.department.name}/{instance.faculty.name}/{instance.username}/{filename}'
-    student = models.ForeignKey(DefaultUser, on_delete=models.CASCADE, related_name='student_user')
+    def profile_picture_upload_path(instance, filename):
+        return f'media/{instance.faculty.name}/{instance.department.name}/{instance.student.username}/{filename}'
+    
+    student = models.ForeignKey(DefaultUser, on_delete=models.CASCADE, related_name='student_user', unique=True)
     
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='student_department', null=True, blank=True)
     faculty =  models.ForeignKey(Faculty, on_delete=models.CASCADE, related_name='student_faculty', null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
+    sex = models.CharField(max_length=20, choices=SEX_CHOICES, default='Male')
     nationality = models.CharField(max_length=50, null=True, blank=True)
     place_of_birth = models.CharField(max_length=100, null=True, blank=True)
     state_of_origin = models.CharField(max_length=100, null=True, blank=True)
@@ -62,7 +80,7 @@ class StudentUser(models.Model):
     permenant_address = models.TextField(null=True, blank=True)
     contact_address = models.TextField(null=True, blank=True)
     religion = models.CharField(max_length=20, choices=RELIGION_CHOICES, default='Christian')
-    next_of_kin_name = models.CharField(max_length=100)
+    next_of_kin_name = models.CharField(max_length=100, null=True, blank=True)
     next_of_kin_address = models.TextField(null=True, blank=True)
     next_of_kin_relationship = models.CharField(max_length=20, choices=NEXT_OF_KIN_CHOICES, default='Brother')
     next_of_kin_telephone = models.CharField(max_length=50, null=True, blank=True)
@@ -152,9 +170,25 @@ def add_student_to_screener(sender, instance, created, **kwargs):
             doa_user.students.add(instance)
             
             
+            
 @receiver(post_save, sender=StudentUser)
 def add_student_to_faculty(sender, instance, created, **kwargs):
     if created and instance.faculty:
         sao_user = SAOUser.objects.filter(faculty=instance.faculty).first()
         if sao_user:
             sao_user.students.add(instance)
+            
+#Unfinshed codes        
+@receiver(post_save, sender=DefaultUser)
+def create_related_instance(sender, instance, created, **kwargs):
+    if created and instance.user_type == 'STUDENT':
+        StudentUser.objects.create(student=instance)
+    elif created and instance.user_type == 'UAO':
+        UAOUser.objects.create(uao=instance)
+    # Add more cases for other user types if needed
+    
+    
+post_save.connect(create_related_instance, sender=DefaultUser)
+
+            
+
