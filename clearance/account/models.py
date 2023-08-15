@@ -1,7 +1,9 @@
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
+
 
 
 
@@ -98,6 +100,49 @@ class StudentUser(models.Model):
     
     def __str__(self) -> str:
         return self.student.username
+    
+    def save(self, *args, **kwargs):
+        created = self.pk is None  # Check if the instance is being created or updated
+        original_department = None
+        original_faculty = None
+        
+        if not created:
+            try:
+                original_instance = StudentUser.objects.get(pk=self.pk)
+                original_department = original_instance.department
+                original_faculty = original_instance.faculty
+            except StudentUser.DoesNotExist:
+                pass
+        
+        super(StudentUser, self).save(*args, **kwargs)  # Call the original save method
+        
+        if self.department != original_department:
+            # Remove from previous department's ScreenUser and DAOUser
+            if original_department:
+                prev_screen_user = ScreenUser.objects.filter(department=original_department).first()
+                prev_doa_user = DAOUser.objects.filter(department=original_department).first()
+                if prev_screen_user:
+                    prev_screen_user.students.remove(self)
+                if prev_doa_user:
+                    prev_doa_user.students.remove(self)
+            
+            # Add to new department's ScreenUser and DAOUser
+            if self.department:
+                new_screen_user = ScreenUser.objects.filter(department=self.department).first()
+                new_doa_user = DAOUser.objects.filter(department=self.department).first()
+                if new_screen_user:
+                    new_screen_user.students.add(self)
+                if new_doa_user:
+                    new_doa_user.students.add(self)
+        
+        if self.faculty != original_faculty:
+            # Add to new faculty's SAOUser
+            if self.faculty:
+                new_sao_user = SAOUser.objects.filter(faculty=self.faculty).first()
+                if new_sao_user:
+                    new_sao_user.students.add(self)
+
+    
 
      
     
@@ -156,27 +201,10 @@ class Current_Admission_Session(models.Model):
         
         def __str__(self) -> str:
             return self.session
-        
-        
-@receiver(post_save, sender=StudentUser)
-def add_student_to_screener(sender, instance, created, **kwargs):
-    if created and instance.department:
-        screen_user = ScreenUser.objects.filter(department=instance.department).first()
-        doa_user = DAOUser.objects.filter(department=instance.department).first()
-        print(screen_user)
-        if screen_user:
-            screen_user.students.add(instance)
-        if doa_user:
-            doa_user.students.add(instance)
+
             
             
-            
-@receiver(post_save, sender=StudentUser)
-def add_student_to_faculty(sender, instance, created, **kwargs):
-    if created and instance.faculty:
-        sao_user = SAOUser.objects.filter(faculty=instance.faculty).first()
-        if sao_user:
-            sao_user.students.add(instance)
+
             
 #Unfinshed codes        
 @receiver(post_save, sender=DefaultUser)
@@ -189,6 +217,9 @@ def create_related_instance(sender, instance, created, **kwargs):
     
     
 post_save.connect(create_related_instance, sender=DefaultUser)
+
+
+
 
             
 

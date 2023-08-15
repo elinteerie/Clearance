@@ -1,5 +1,5 @@
-from django.db import models
 from account.models import StudentUser
+from django.db import models
 from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -25,7 +25,7 @@ file_extension_validator = FileExtensionValidator(allowed_extensions=['pdf', 'pn
                                                       message='Only PDF, PNG, JPEG, and JPG files are allowed.')
 
 class StudentDocumentICT(models.Model):
-    student = models.ForeignKey(StudentUser, on_delete=models.CASCADE, related_name='documents')
+    student = models.OneToOneField(StudentUser, on_delete=models.CASCADE, related_name='document')
     jamb_admission_letter = models.FileField(upload_to=student_document_upload_path, null=True, blank=True, validators=[validate_file_size, file_extension_validator])
     futo_post_ume_result = models.FileField(upload_to=student_document_upload_path, null=True, blank=True, validators=[validate_file_size, file_extension_validator])
     o_level_result = models.FileField(upload_to=student_document_upload_path, null=True, blank=True, validators=[validate_file_size, file_extension_validator])
@@ -39,6 +39,10 @@ class StudentDocumentICT(models.Model):
     direct_entry_result = models.FileField(upload_to=student_document_upload_path, null=True, blank=True, validators=[validate_file_size, file_extension_validator])
     submitted = models.BooleanField(default=False)
     verified = models.BooleanField(default=False)
+    
+    
+    def __str__(self) -> str:
+        return self.student.student.username
     
     
     def save(self, *args, **kwargs):
@@ -68,8 +72,7 @@ class StudentDocumentICT(models.Model):
     
 
 class StudentRecord(models.Model):
-    student = models.ForeignKey(StudentUser, on_delete=models.CASCADE, related_name='documents_final')
-    ictdocs = models.ForeignKey(StudentDocumentICT, on_delete=models.CASCADE, null=True, blank=True, related_name='ictdocss')
+    student = models.OneToOneField(StudentUser, on_delete=models.CASCADE, related_name='records')
     form_1 = models.FileField(upload_to=student_document_upload_path, null=True, blank=True, validators=[validate_file_size, file_extension_validator])
     form_04= models.FileField(upload_to=student_document_upload_path, null=True, blank=True, validators=[validate_file_size, file_extension_validator])
     form_09 = models.FileField(upload_to=student_document_upload_path, null=True, blank=True, validators=[validate_file_size, file_extension_validator])
@@ -83,20 +86,16 @@ class StudentRecord(models.Model):
         if all([getattr(self, field) for field in ['form_1', 'form_04', 'form_09', 'form_08', 'form_12', 'form_13']]):
             self.submitted = True
         super(StudentRecord, self).save(*args, **kwargs)
+        
+    def __str__(self) -> str:
+        return self.student.student.username
 
 
 @receiver(post_save, sender=StudentUser)
-def create_student_document(sender, instance, created, **kwargs):
+def create_student_documents(sender, instance, created, **kwargs):
     if created:
         StudentDocumentICT.objects.create(student=instance)
-post_save.connect(create_student_document, sender=StudentUser)
-
-
-@receiver(post_save, sender=StudentDocumentICT)
-def create_student_record(sender, instance, created, **kwargs):
-    if created:
-        StudentRecord.objects.create(student=instance.student, ictdocs=instance)
-post_save.connect(create_student_record, sender=StudentDocumentICT)
+        StudentRecord.objects.create(student=instance)
 
 
 
