@@ -23,7 +23,7 @@ class StudentRecordSerializer(serializers.ModelSerializer):
     
 
 class StudentUserSerializer(serializers.ModelSerializer):
-    document = StudentDocumentICTSerializer(read_only=True)
+    document = StudentDocumentICTSerializer()
     records = StudentRecordSerializer(read_only=True)
     
     class Meta:
