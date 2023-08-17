@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'account',
     'frontendtemplates',
     'screnner',
+    'student',
     
     'rest_framework',
     'rest_framework.authtoken',

@@ -42,7 +42,7 @@ class StudentListByScreenUser(generics.ListAPIView):
         return students
     
     
-class StudentUpdateByScreenUser(generics.UpdateAPIView):
+class StudentUpdateByScreenUser(generics.RetrieveUpdateAPIView):
     """
     Update the fields of a student associated with the authenticated ScreenUser.
 
