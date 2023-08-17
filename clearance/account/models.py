@@ -105,7 +105,7 @@ class StudentUser(models.Model):
         created = self.pk is None  # Check if the instance is being created or updated
         original_department = None
         original_faculty = None
-        
+    
         if not created:
             try:
                 original_instance = StudentUser.objects.get(pk=self.pk)
@@ -113,9 +113,9 @@ class StudentUser(models.Model):
                 original_faculty = original_instance.faculty
             except StudentUser.DoesNotExist:
                 pass
-        
+    
         super(StudentUser, self).save(*args, **kwargs)  # Call the original save method
-        
+    
         if self.department != original_department:
             # Remove from previous department's ScreenUser and DAOUser
             if original_department:
@@ -125,8 +125,8 @@ class StudentUser(models.Model):
                     prev_screen_user.students.remove(self)
                 if prev_doa_user:
                     prev_doa_user.students.remove(self)
-            
-            # Add to new department's ScreenUser and DAOUser
+        
+        # Add to new department's ScreenUser and DAOUser
             if self.department:
                 new_screen_user = ScreenUser.objects.filter(department=self.department).first()
                 new_doa_user = DAOUser.objects.filter(department=self.department).first()
@@ -134,13 +134,23 @@ class StudentUser(models.Model):
                     new_screen_user.students.add(self)
                 if new_doa_user:
                     new_doa_user.students.add(self)
-        
+    
         if self.faculty != original_faculty:
-            # Add to new faculty's SAOUser
+            # Remove from previous faculty's SAOUser
+            if original_faculty:
+                prev_sao_user = SAOUser.objects.filter(faculty=original_faculty).first()
+                if prev_sao_user:
+                    prev_sao_user.students.remove(self)
+        
+        # Add to new faculty's SAOUser and ScreenUser
             if self.faculty:
                 new_sao_user = SAOUser.objects.filter(faculty=self.faculty).first()
+                new_screen_user = ScreenUser.objects.filter(faculty=self.faculty).first()
                 if new_sao_user:
                     new_sao_user.students.add(self)
+                if new_screen_user:
+                    new_screen_user.students.add(self)
+
 
     
 
