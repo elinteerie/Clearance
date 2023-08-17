@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'document',
     'account',
     'frontendtemplates',
-    'screener',
+    'screnner',
     
     'rest_framework',
     'rest_framework.authtoken',
