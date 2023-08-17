@@ -8,6 +8,9 @@ django = "*"
 djangorestframework = "*"
 pillow = "*"
 dj-rest-auth = "*"
+django-allauth = "*"
+whitenoise = "*"
+drf-spectacular = "*"
 
 [dev-packages]
 
