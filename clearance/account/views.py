@@ -59,7 +59,7 @@ class StudentUpdateByScreenUser(generics.UpdateAPIView):
         - PUT/PATCH: Update the fields of the student instance.
 
     Parameters:
-        - pk (int): The primary key of the student instance.
+        - username (regnum): The primary key of the student instance.
 
     Returns:
         The updated serialized student instance.
