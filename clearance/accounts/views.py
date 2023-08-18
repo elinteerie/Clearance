@@ -49,7 +49,11 @@ class CustomRegisterView(RegisterView):
         user = serializer.save(self.request)
         response_data = {
             "detail": "Profile successfully created.",
-            "username": user.username,
-            "user_type": user.user_type,
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "user_type": user.user_type,
+            }
         }
         return Response(response_data, status=status.HTTP_201_CREATED)
