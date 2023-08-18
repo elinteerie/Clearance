@@ -9,7 +9,8 @@ module.exports = {
     extend: {
       colors:{
         light_green:"#9FB59F",
-        dark_green:"#0A270A"
+        dark_green:"#0A270A",
+        brown:"#7C4D4D"
       }
     },
   },

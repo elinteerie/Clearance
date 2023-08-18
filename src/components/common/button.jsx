@@ -8,6 +8,7 @@ const Button = ({
   padding,
   width,
   className,
+  radius,
   style,
 }) => {
   return (
@@ -17,9 +18,9 @@ const Button = ({
         className={
           className
             ? className
-            : `w-full bg-dark_green text-white p-2 rounded-md  text-center`
+            : `w-full bg-dark_green text-white p-2 rounded-md  text-center hover:bg-light_green`
         }
-        style={style ? style :{width:width, padding:padding,backgroundColor:bg}}
+        style={style ? style :{width:width, padding:padding,backgroundColor:bg,borderRadius:radius}}
       >
         {title}
       </button>

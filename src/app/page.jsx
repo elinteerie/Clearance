@@ -1,17 +1,20 @@
+"use client";
 import Image from "next/image";
 import sideImg from "../../public/assets/images/school_gate.png";
 import Button from "@/components/common/button";
 import Logo from "@/components/common/logo";
+import { useRouter } from "next/navigation";
 export default function Home() {
+  const router = useRouter();
   return (
     <>
-      <main className="flex flex-col min-h-screen bg-light_green w-full m-0 p-0 ">
-        <div className=" flex flex-row w-full flex-nowrap  items-start justify-evenly p-0 m-0 ">
-          <section className=" basis-2/4 h-full">
+      <main className="flex flex-col h-screen bg-light_green w-full m-0 p-0 ">
+        <div className=" h-full flex flex-row w-full flex-nowrap  items-start justify-evenly p-0 m-0 ">
+          <section className=" hidden md:hidden lg:basis-2/4 lg:h-full lg:block ">
             <Image src={sideImg} className=" w-full h-full object-cover" />
           </section>
-          <section className=" basis-2/4 h-full  pr-10 pl-10 pt-5 ">
-            <div className="bg-white rounded pt-4 pb-4 pr-6 pl-6 h-full flex-1 ">
+          <section className=" h-full basis-full flex justify-center items-center lg:basis-2/4  lg:pr-10 lg:pl-10 lg:pt-5 lg:block ">
+            <div className="bg-white w-full h-full flex-1 rounded pt-4  pr-6 pl-6  pb-10 sm:w-3/4 md:flex-initial md:h-fit lg:w-full lg:flex-1 lg:h-fit  ">
               <Logo />
 
               <div className="w-full mt-3">
@@ -20,7 +23,7 @@ export default function Home() {
                 </h1>
               </div>
 
-              <div className="w-full mt-10  mb-48">
+              <div className="w-full mt-10 mb-28">
                 <p className="text-black text-lg text-left">
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit. In at
                   pellentesque dui. Sed eget euismod enim. Vivamus m aximus
@@ -33,7 +36,13 @@ export default function Home() {
                 </p>
               </div>
               <div className="w-full mt-14 flex flex-row items-center justify-center mb-9  ">
-                <Button title={"Get Started"} width={"150px"} />
+                <Button
+                  onClick={() => {
+                    router.push("/auth/login");
+                  }}
+                  title={"Get Started"}
+                  width={"150px"}
+                />
               </div>
             </div>
           </section>
