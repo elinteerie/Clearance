@@ -24,7 +24,7 @@ class CustomRegisterView(RegisterView):
 
     HTTP Methods:
         - POST: Create a new user profile with provided data.
-            -USER_TYPE FIELD: DAO, STUDENT, SENATE, SAO, UAO, SCREEN 
+            -USER_TYPE FIELD: DAO, STUDENT, SENATE, SAO, UAO, SCREEN - Use STUDENT for registering students
         
 
     Returns:
