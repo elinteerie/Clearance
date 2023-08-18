@@ -57,3 +57,4 @@ class CustomRegisterView(RegisterView):
             }
         }
         return Response(response_data, status=status.HTTP_201_CREATED)
+

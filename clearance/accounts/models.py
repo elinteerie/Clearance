@@ -69,7 +69,7 @@ class StudentUser(models.Model):
     def profile_picture_upload_path(instance, filename):
         return f'media/{instance.faculty.name}/{instance.department.name}/{instance.student.username}/{filename}'
     
-    student = models.ForeignKey(DefaultUser, on_delete=models.CASCADE, related_name='student_user', unique=True)
+    student = models.OneToOneField(DefaultUser, on_delete=models.CASCADE, related_name='student_user')
     
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='student_department', null=True, blank=True)
     faculty =  models.ForeignKey(Faculty, on_delete=models.CASCADE, related_name='student_faculty', null=True, blank=True)

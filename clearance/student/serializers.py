@@ -31,5 +31,12 @@ class StudentProfileRetrieveUpdateSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+    
+class StudentUserSerializering(serializers.ModelSerializer):
+    class Meta:
+        model = StudentUser
+        fields = "__all__"
+        #read_only = ['student']
+        depth  = 1
 
 

@@ -3,7 +3,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from accounts.models import StudentUser
-from .serializers import StudentProfileRetrieveUpdateSerializer
+from .serializers import StudentProfileRetrieveUpdateSerializer, StudentUserSerializering
 
 
 class StudentProfileRetrieveUpdateView(generics.RetrieveUpdateAPIView):
@@ -39,4 +39,14 @@ class StudentProfileRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         """
         student_profile = StudentUser.objects.get(student=self.request.user)
         return student_profile
+    
+    
+class StudentUserRetrieveView(generics.RetrieveAPIView):
+    queryset = StudentUser.objects.all()
+    serializer_class = StudentUserSerializering
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        # Retrieve the student user associated with the authenticated user
+        return self.request.user.student_user
 
