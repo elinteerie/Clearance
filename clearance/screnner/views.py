@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 from rest_framework import generics
-from account.models import StudentUser, ScreenUser
+from accounts.models import StudentUser, ScreenUser
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from .serializers import StudentUserSerializer, ScreenUserSerializer, ScreenUserSerializeraa, StudentDocumentICTSerializer, StudentDocumentICTUpdateSerializer

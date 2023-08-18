@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'document',
-    'account',
+    'accounts.apps.AccountConfig',
     'frontendtemplates',
     'screnner',
     'student',
@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'allauth',
-    #'allauth.account',
+    'allauth.account',
     'dj_rest_auth',
     'drf_spectacular',
 ]
@@ -65,7 +65,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'clearance.urls'
 
-AUTH_USER_MODEL = 'account.DefaultUser'
+AUTH_USER_MODEL = 'accounts.DefaultUser'
 
 TEMPLATES = [
     {

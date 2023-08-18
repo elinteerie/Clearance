@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from account.models import StudentUser, ScreenUser
+from accounts.models import StudentUser, ScreenUser
 from document.models import StudentDocumentICT, StudentRecord
 
 class StudentDocumentICTSerializer(serializers.ModelSerializer):

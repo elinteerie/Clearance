@@ -1,4 +1,4 @@
-from account.models import StudentUser
+from accounts.models import StudentUser
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save

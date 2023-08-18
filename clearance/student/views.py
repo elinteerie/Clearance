@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from account.models import StudentUser
+from accounts.models import StudentUser
 from .serializers import StudentProfileRetrieveUpdateSerializer
 
 
