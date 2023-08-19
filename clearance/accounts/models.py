@@ -34,6 +34,10 @@ class DefaultUser(AbstractUser):
     
     user_type = models.CharField(max_length=10, choices=USER_TYPES)
     
+    
+        
+        
+    
 
 class StudentUser(models.Model):
     
@@ -215,18 +219,7 @@ class Current_Admission_Session(models.Model):
             
             
 
-            
-#Unfinshed codes        
-@receiver(post_save, sender=DefaultUser)
-def create_related_instance(sender, instance, created, **kwargs):
-    if created and instance.user_type == 'STUDENT':
-        StudentUser.objects.create(student=instance)
-    elif created and instance.user_type == 'UAO':
-        UAOUser.objects.create(uao=instance)
-    # Add more cases for other user types if needed
-    
-    
-post_save.connect(create_related_instance, sender=DefaultUser)
+
 
 
 
