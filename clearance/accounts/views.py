@@ -5,12 +5,13 @@ from django.utils.decorators import method_decorator
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-
+from dj_rest_auth.views import LoginView
+from django.contrib.auth import authenticate
 
 from dj_rest_auth.registration.views import RegisterView
 
 
-from .serializers import CustomRegisterSerializer
+from .serializers import CustomRegisterSerializer, CustomLoginSerializer
 
 class CustomRegisterView(RegisterView):
     """
@@ -58,3 +59,20 @@ class CustomRegisterView(RegisterView):
         }
         return Response(response_data, status=status.HTTP_201_CREATED)
 
+
+class CustomLoginView(LoginView):
+    serializer_class = CustomLoginSerializer
+    def login(self, request):
+        # Your custom login logic here
+        # Example:
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = authenticate(username=username, password=password)
+        
+        if user:
+            login(request, user)
+            # Return a successful response
+            return Response({'message': 'Login successful'})
+        else:
+            # Return an error response
+            return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
