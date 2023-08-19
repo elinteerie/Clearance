@@ -14,8 +14,5 @@ class CustomRegisterSerializer(RegisterSerializer):
         # Add more cases for other user types if needed
         return user
     
-class CustomLoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField(write_only=True)
         
         
