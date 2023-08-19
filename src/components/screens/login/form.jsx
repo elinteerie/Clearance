@@ -1,8 +1,10 @@
 "use client";
 import Button from "@/components/common/button";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const Login_Form = () => {
+  const router = useRouter()
   const [formData, setFormData] = useState([
     {
       name: "Reg No",
@@ -40,7 +42,7 @@ const Login_Form = () => {
         }}
       >
         {formData.map(({ name, value, type },index) => (
-          <div className="w-full mt-3">
+          <div key={index} className="w-full mt-3">
             <div className="w-full flex  justify-start items-center">
               <label className=" text-ls text-brown font-medium">{name}:</label>
             </div>
@@ -57,6 +59,9 @@ const Login_Form = () => {
 
         <div className="w-full flex justify-center items-center mt-16 ">
           <Button
+          onClick={()=>{
+            router.push("/student_information")
+          }}
             radius={"21px"}
             width={"60%"}
             title={"Sign Up"}

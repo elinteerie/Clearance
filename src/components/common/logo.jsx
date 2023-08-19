@@ -1,9 +1,9 @@
 import Image from "next/image";
 import logo from "../../../public/assets/images/logo.png";
-const Logo = () => {
+const Logo = ({bg}) => {
   return (
-    <div className="flex flex-row justify-start  items-center gap-2 w-full">
-      <Image src={logo} width={70} height={77} />
+    <div style={{background:bg}} className="flex flex-row justify-start  items-center gap-2 w-full">
+      <Image priority alt="logo" src={logo} width={'auto'} height={'auto'} />
       <h3 className=" text-black text-base lg:text-lg">
         Federal university technology owerri
       </h3>
