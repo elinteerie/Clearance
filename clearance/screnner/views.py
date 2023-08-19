@@ -1,14 +1,15 @@
 from django.shortcuts import render
 
 from rest_framework import generics
-from accounts.models import StudentUser, ScreenUser
+from accounts.models import StudentUser, ScreenUser, Faculty
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .serializers import StudentUserSerializer, ScreenUserSerializer, ScreenUserSerializeraa, StudentDocumentICTSerializer, StudentDocumentICTUpdateSerializer
+from .serializers import StudentUserSerializer, ScreenUserSerializer, ScreenUserSerializeraa, StudentDocumentICTSerializer, StudentDocumentICTUpdateSerializer, StudentUserSerializeraaa
 from document.models import StudentDocumentICT
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from .permissions import IsAuthenticatedScreenUserInFaculty
 
 
 class StudentListByScreenUser(generics.ListAPIView):
@@ -137,3 +138,70 @@ class StudentDocumentICTUpdateByScreenUser(generics.UpdateAPIView):
         screen_user = ScreenUser.objects.get(screener=self.request.user)
         students = screen_user.students.all()
         return StudentDocumentICT.objects.filter(student__in=students)
+    
+    
+class ScreenUserStudentListView(generics.ListAPIView):
+    """
+    API View to retrieve a list of students associated with a ScreenUser,
+    filtered by departments within the ScreenUser's faculty.
+
+    ScreenUser can manage student information, retrieve and update them.
+
+    Attributes:
+        serializer_class (class): Serializer class to serialize student data.
+    
+    Methods:
+        get_queryset(): Get the queryset of students based on the faculty and departments of the ScreenUser.
+        list(request, *args, **kwargs): Generate a response containing student data grouped by departments.
+
+    Returns:
+        Response: A dictionary containing students grouped by department.
+        Example:
+        {
+            "Department A": {
+                "students": [
+                    { ... },
+                    { ... }
+                ]
+            },
+            "Department B": {
+                "students": [
+                    { ... }
+                ]
+            }
+        }
+    """
+    serializer_class = StudentUserSerializer
+
+    def get_queryset(self):
+        """
+        Get the queryset of students based on the faculty and departments of the ScreenUser.
+
+        Returns:
+            QuerySet: Queryset of StudentUser instances filtered by department.
+        """
+        screen_user = ScreenUser.objects.get(screener=self.request.user)
+        faculty = screen_user.faculty
+        departments = faculty.departments.all()
+
+        queryset = StudentUser.objects.filter(department__in=departments)
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        """
+        Generate a response containing student data grouped by departments.
+
+        Returns:
+            Response: A dictionary containing students grouped by department.
+        """
+        queryset = self.get_queryset()
+        serialized_data = self.serializer_class(queryset, many=True).data
+
+        response_data = {}
+        for student in serialized_data:
+            department_name = student['department']['name']
+            if department_name not in response_data:
+                response_data[department_name] = {'students': []}
+            response_data[department_name]['students'].append(student)
+
+        return Response(response_data)

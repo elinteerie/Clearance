@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from accounts.models import StudentUser, ScreenUser
+from accounts.models import StudentUser, ScreenUser, Department, Faculty
 from document.models import StudentDocumentICT, StudentRecord
 
 class StudentDocumentICTSerializer(serializers.ModelSerializer):
@@ -78,3 +78,17 @@ class StudentDocumentICTUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentDocumentICT
         fields = ['jamb_admission_letter', 'futo_post_ume_result', 'o_level_result', 'confirmation_of_admission', 'futo_admission_letter', 'validity_form', 'acceptance_letter', 'birth_certificate', 'lga_identification', 'school_fees_receipt', 'direct_entry_result', 'submitted', 'verified']
+
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = '__all__'
+
+class StudentUserSerializeraaa(serializers.ModelSerializer):
+    #department = DepartmentSerializer()
+
+    class Meta:
+        model = StudentUser
+        fields = '__all__'
+
