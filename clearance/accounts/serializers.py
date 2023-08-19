@@ -2,6 +2,8 @@ from dj_rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 
 from .models import DefaultUser, StudentUser
+from dj_rest_auth.serializers import LoginSerializer
+from django.contrib.auth import authenticate, login
 
 class CustomRegisterSerializer(RegisterSerializer):
     user_type = serializers.ChoiceField(choices=DefaultUser.USER_TYPES)
@@ -14,5 +16,32 @@ class CustomRegisterSerializer(RegisterSerializer):
         # Add more cases for other user types if needed
         return user
     
-        
-        
+    
+class CustomLoginSerializer(LoginSerializer):
+    username = serializers.CharField(required=True)
+    
+
+    def validate(self, attrs):
+        username = attrs.get('username')
+        password = attrs.get('password')
+
+        if username and password:
+            user = authenticate(username=username, password=password)
+            if user:
+                if not user.is_active:
+                    msg = _('User account is disabled.')
+                    raise serializers.ValidationError(msg)
+            else:
+                msg = _('Unable to log in with provided credentials.')
+                raise serializers.ValidationError(msg)
+        else:
+            msg = _('Must include "username" and "password".')
+            raise serializers.ValidationError(msg)
+
+        attrs['user'] = user
+        return attrs
+    
+    def get_fields(self):
+        fields = super().get_fields()
+        fields.pop('email')  # Remove the email field from the serializer
+        return fields
