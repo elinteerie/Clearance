@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'dj_rest_auth',
     'drf_spectacular',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -61,11 +62,21 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'clearance.urls'
 
 AUTH_USER_MODEL = 'accounts.DefaultUser'
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Add the URLs of your frontend origins here
+    "http://yourfrontenddomain.com",
+    "https://localhost:3000",  
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
 
 TEMPLATES = [
     {

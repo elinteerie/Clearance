@@ -13,5 +13,9 @@ class CustomRegisterSerializer(RegisterSerializer):
             StudentUser.objects.create(student=user)
         # Add more cases for other user types if needed
         return user
+    
+class CustomLoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
         
         

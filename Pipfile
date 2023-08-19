@@ -11,6 +11,7 @@ dj-rest-auth = "*"
 django-allauth = "*"
 whitenoise = "*"
 drf-spectacular = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 
