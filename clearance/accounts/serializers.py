@@ -1,5 +1,7 @@
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
+from django.utils.translation import gettext_lazy as _
+
 
 from .models import DefaultUser, StudentUser
 from dj_rest_auth.serializers import LoginSerializer
