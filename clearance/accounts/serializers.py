@@ -16,15 +16,15 @@ class CustomRegisterSerializer(RegisterSerializer):
         if user.user_type == 'STUDENT':
             StudentUser.objects.create(student=user)
         if user.user_type == 'DAO':
-            DAOUser.objects.create(student=user)
+            DAOUser.objects.create(dao=user)
         if user.user_type == 'SAO':
-            SAOUser.objects.create(student=user)
+            SAOUser.objects.create(sao=user)
         if user.user_type == 'SENATE':
-            SenateUser.objects.create(student=user)
+            SenateUser.objects.create(senate=user)
         if user.user_type == 'UAO':
-            UAOUser.objects.create(student=user)
+            UAOUser.objects.create(uao=user)
         if user.user_type == 'SCREEN':
-            ScreenUser.objects.create(student=user)
+            ScreenUser.objects.create(screener=user)
         
         # Add more cases for other user types if needed
         return user
