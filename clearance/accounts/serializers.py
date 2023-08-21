@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 
 
-from .models import DefaultUser, StudentUser
+from .models import DefaultUser, StudentUser, DAOUser, SAOUser, SenateUser, UAOUser, ScreenUser
 from dj_rest_auth.serializers import LoginSerializer
 from django.contrib.auth import authenticate, login
 
@@ -16,15 +16,15 @@ class CustomRegisterSerializer(RegisterSerializer):
         if user.user_type == 'STUDENT':
             StudentUser.objects.create(student=user)
         if user.user_type == 'DAO':
-            StudentUser.objects.create(student=user)
+            DAOUser.objects.create(student=user)
         if user.user_type == 'SAO':
-            StudentUser.objects.create(student=user)
+            SAOUser.objects.create(student=user)
         if user.user_type == 'SENATE':
-            StudentUser.objects.create(student=user)
+            SenateUser.objects.create(student=user)
         if user.user_type == 'UAO':
-            StudentUser.objects.create(student=user)
+            UAOUser.objects.create(student=user)
         if user.user_type == 'SCREEN':
-            StudentUser.objects.create(student=user)
+            ScreenUser.objects.create(student=user)
         
         # Add more cases for other user types if needed
         return user
