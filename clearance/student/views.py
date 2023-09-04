@@ -3,7 +3,9 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from accounts.models import StudentUser
+from accounts.models import Faculty, Department
 from .serializers import StudentProfileRetrieveUpdateSerializer, StudentUserSerializering
+from .serializers import FacultySerializer, DepartmentSerializer
 
 
 class StudentProfileRetrieveUpdateView(generics.RetrieveUpdateAPIView):
@@ -50,3 +52,18 @@ class StudentUserRetrieveView(generics.RetrieveAPIView):
         # Retrieve the student user associated with the authenticated user
         return self.request.user.student_user
 
+
+
+class FacultyListView(generics.ListAPIView):
+    """
+    Retrieve a list of all faculties.
+    """
+    queryset = Faculty.objects.all()
+    serializer_class = FacultySerializer
+
+class DepartmentListView(generics.ListAPIView):
+    """
+    Retrieve a list of all departments.
+    """
+    queryset = Department.objects.all()
+    serializer_class = DepartmentSerializer

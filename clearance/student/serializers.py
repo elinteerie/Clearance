@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from accounts.models import StudentUser, DefaultUser
+from accounts.models import StudentUser, DefaultUser, Department, Faculty
 
 
 User = get_user_model()
@@ -40,3 +40,16 @@ class StudentUserSerializering(serializers.ModelSerializer):
         depth  = 1
 
 
+
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = '__all__'
+
+class FacultySerializer(serializers.ModelSerializer):
+    departments = DepartmentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Faculty
+        fields = '__all__'
